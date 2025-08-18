@@ -1,0 +1,24 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+#app {
+    margin-top: 20px;
+}
+
+#userInput {
+    width: 80%;
+    height: 50px;
+}
+
+#sendBtn {
+    height: 55px;
+}
+
+#chatOutput p {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+}
