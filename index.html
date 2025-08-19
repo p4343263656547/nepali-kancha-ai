@@ -1,19 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nepali Kancha AI</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nepali Kancha AI</title>
+<style>
+  :root{
+    --bg: radial-gradient(1200px 800px at 20% 10%, #7dd3fc55, transparent 60%),
+          radial-gradient(900px 700px at 85% 80%, #c4b5fd55, transparent 60%),
+          linear-gradient(180deg, #0f172a, #111827);
+    --glass-bg: rgba(255,255,255,.10);
+    --glass-bd: rgba(255,255,255,.25);
+    --text: #e5e7eb;
+    --muted:#9ca3af;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    color:var(--text);
+    background: var(--bg) fixed;
+    overflow:hidden;
+  }
+
+  /* Top bar */
+  .topbar{
+    position:fixed; inset:0 0 auto 0; height:56px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 14px;
+    background: rgba(17,24,39,.35);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .title{font-weight:600; letter-spacing:.2px}
+  .icons{display:flex; gap:10px; font-size:20px}
+  .icon{width:36px; height:36px; display:grid; place-items:center;
+        background:var(--glass-bg); border:1px solid var(--glass-bd);
+        border-radius:12px; cursor:pointer; user-select:none}
+
+  /* Center area */
+  .center{
+    position:absolute; inset:56px 16px 92px 16px;
+    display:flex; flex-direction:column; align-items:center;
+    overflow:hidden;
+  }
+  .glass-title{
+    padding:22px 28px;
+    font-size: clamp(28px, 6vw, 56px);
+    font-weight: 800;
+    text-align:center;
+    color:#fff;
+    background: var(--glass-bg);
+    border:1px solid var(--glass-bd);
+    border-radius: 24px;
+    backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.06);
+    text-shadow: 0 2px 14px rgba(0,0,0,.35);
+  }
+  .subtitle{margin-top:6px; text-align:center; color:var(--muted); font-size:14px;}
+
+  /* Chat box */
+  .chat-box{
+    margin-top:16px;
+    flex:1;
+    width:100%;
+    max-width:600px;
+    display:flex;
+    flex-direction:column;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-bd);
+    border-radius:18px;
+    backdrop-filter: blur(10px);
+    padding:12px;
+    overflow-y:auto;
+  }
+  .msg{margin:6px 0; padding:8px 12px; border-radius:12px; max-width:80%;}
+  .msg.user{background:#10b98133; align-self:flex-end;}
+  .msg.bot{background:#3b82f633; align-self:flex-start;}
+
+  .chat-input{
+    display:flex; margin-top:10px; width:100%; max-width:600px;
+    background:var(--glass-bg); border:1px solid var(--glass-bd);
+    border-radius:12px; overflow:hidden;
+  }
+  .chat-input input{
+    flex:1; padding:10px; border:none; outline:none;
+    background:transparent; color:var(--text);
+  }
+  .chat-input button{
+    padding:10px 16px; border:none; cursor:pointer;
+    background:#2563eb55; color:#bfdbfe; font-weight:600;
+  }
+
+  /* Bottom actions */
+  .bottom-left, .bottom-right{position:fixed; bottom:16px;}
+  .bottom-left{ left:16px; display:flex; align-items:center; gap:12px}
+  .avatar{width:64px; height:64px; border-radius:50%; display:grid; place-items:center;
+          font-weight:700; background:var(--glass-bg); border:1px solid var(--glass-bd);
+          backdrop-filter: blur(8px);}
+  .login{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+  .login button{padding:8px 14px; border-radius:10px; border:1px solid var(--glass-bd);
+                background:#10b98122; color:#a7f3d0; cursor:pointer;}
+
+  .bottom-right{ right:16px}
+  .settings-btn{border:none; cursor:pointer; font-weight:600;
+                padding:10px 14px; border-radius:12px; color:var(--text);
+                background:var(--glass-bg); border:1px solid var(--glass-bd);
+                backdrop-filter: blur(8px);}
+
+  /* Settings panel */
+  .panel{position:fixed; right:16px; bottom:72px; width:min(92vw, 320px);
+         padding:14px; border-radius:16px;
+         background:rgba(17,24,39,.7); color:var(--text);
+         border:1px solid rgba(255,255,255,.12);
+         backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,.4);
+         display:none;}
+  .panel.show{display:block}
+  .row{display:flex; align-items:center; justify-content:space-between; margin:8px 0}
+  .toggle{accent-color:#22c55e}
+  a.link{color:#93c5fd; text-decoration:none}
+  a.link:hover{text-decoration:underline}
+
+  @media (max-width:480px){
+    .avatar{width:56px;height:56px}
+    .bottom-left{gap:10px}
+  }
+</style>
 </head>
 <body>
-    <h1>Welcome to Nepali Kancha AI</h1>
-    <div id="app">
-        <textarea id="userInput" placeholder="Type your message..."></textarea>
-        <button id="sendBtn">Send</button>
-        <div id="chatOutput"></div>
-    </div>
 
-    <script src="script.js"></script>
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="title">Talk anything with Kancha</div>
+    <div class="icons">
+      <div class="icon" id="micBtn" title="Voice">🎤</div>
+      <div class="icon" title="Coffee">☕</div>
+      <div class="icon" title="Mood">😊</div>
+    </div>
+  </div>
+
+  <!-- Center area -->
+  <main class="center">
+    <div class="glass-title">Nepali Kancha&nbsp;AI</div>
+    <div class="subtitle">(under development)</div>
+
+    <div class="chat-box" id="chatBox"></div>
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Type a message..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </main>
+
+  <!-- Bottom left -->
+  <div class="bottom-left">
+    <div class="avatar">NK</div>
+    <div class="login">
+      <span>Name of User</span>
+      <button id="loginBtn">Login</button>
+    </div>
+  </div>
+
+  <!-- Bottom right -->
+  <div class="bottom-right">
+    <button id="settingsBtn" class="settings-btn">⚙ Settings</button>
+  </div>
+
+  <!-- Settings panel -->
+  <div id="panel" class="panel" aria-hidden="true">
+    <div class="row"><strong>Settings</strong> <button id="closePanel" class="settings-btn">✕</button></div>
+    <div class="row"><span>Dark mode</span><input type="checkbox" class="toggle" id="darkToggle" checked></div>
+    <div class="row"><span>Typing sound</span><input type="checkbox" class="toggle"></div>
+    <div class="row"><span>Language</span>
+      <select><option>Nepali</option><option>English</option></select>
+    </div>
+    <div class="row" style="justify-content:center; margin-top:6px;">
+      <a class="link" href="#">Privacy • Terms</a>
+    </div>
+  </div>
+
+<script>
+  // panel
+  const settingsBtn=document.getElementById('settingsBtn');
+  const panel=document.getElementById('panel');
+  const closePanel=document.getElementById('closePanel');
+  const darkToggle=document.getElementById('darkToggle');
+  settingsBtn.addEventListener('click',()=>panel.classList.add('show'));
+  closePanel.addEventListener('click',()=>panel.classList.remove('show'));
+  darkToggle.addEventListener('change',(e)=>{
+    document.body.style.background=e.target.checked
+      ? getComputedStyle(document.documentElement).getPropertyValue('--bg')
+      : '#0b1220';
+  });
+
+  // login
+  document.getElementById('loginBtn').addEventListener('click',()=>{
+    const name=prompt('Enter your name:');
+    if(name){document.querySelector('.login span').textContent=name;}
+  });
+
+  // Chat
+  const chatBox=document.getElementById('chatBox');
+  const chatInput=document.getElementById('chatInput');
+  const sendBtn=document.getElementById('sendBtn');
+
+  function addMsg(text,who='user'){
+    const div=document.createElement('div');
+    div.className='msg '+who;
+    div.textContent=text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop=chatBox.scrollHeight;
+  }
+
+  sendBtn.onclick=()=>{
+    const text=chatInput.value.trim();
+    if(!text) return;
+    addMsg(text,'user');
+    chatInput.value='';
+    setTimeout(()=>addMsg("Kancha heard: "+text,'bot'),500);
+  };
+
+  // Mic speech recognition
+  const micBtn=document.getElementById('micBtn');
+  if('webkitSpeechRecognition' in window){
+    const rec=new webkitSpeechRecognition();
+    rec.lang='en-US';
+    rec.continuous=false;
+    rec.interimResults=false;
+    rec.onresult=(e)=>{
+      const text=e.results[0][0].transcript;
+      addMsg(text,'user');
+      setTimeout(()=>addMsg("Kancha heard (via voice): "+text,'bot'),500);
+    };
+    micBtn.onclick=()=>rec.start();
+  }else{
+    micBtn.onclick=()=>alert("Speech API not supported in this browser.");
+  }
+</script>
 </body>
 </html>
