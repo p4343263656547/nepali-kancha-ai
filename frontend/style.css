@@ -1,0 +1,60 @@
+/* Reset & base styles */
+* { margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif; }
+body, html { width:100%; height:100%; background:linear-gradient(135deg,#1f1c2c,#928dab); color:white; overflow: hidden; }
+
+/* Glass title */
+.glass-title {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  font-size:5vw; font-weight:bold;
+  color:rgba(255,255,255,0.2); text-shadow:0 0 10px rgba(255,255,255,0.1);
+  pointer-events:none; z-index:1;
+}
+
+/* Left panel */
+.left-panel {
+  position:fixed; left:0; top:0; bottom:0; width:250px;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(10px);
+  display:flex; flex-direction:column; align-items:center; padding:20px; z-index:2;
+}
+.user-info { margin-top:20px; text-align:center; }
+.user-info img { border-radius:50%; margin-top:10px; width:50px; height:50px; object-fit:cover; }
+
+/* Chat section */
+.chat-section {
+  margin-left:250px; padding:20px; height:100%; overflow-y:auto;
+  position:relative; z-index:1; display:flex; flex-direction:column;
+}
+.message { margin:10px 0; padding:10px; border-radius:10px; max-width:60%; word-wrap:break-word; }
+.user-message { background:rgba(255,255,255,0.2); align-self:flex-end; }
+.ai-message { background:rgba(0,0,0,0.3); align-self:flex-start; }
+
+/* Input box */
+.input-box {
+  position:fixed; bottom:0; left:250px; right:0;
+  display:flex; align-items:center; padding:10px 20px;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(10px);
+}
+.input-box input {
+  flex:1; padding:10px; border-radius:25px; border:none;
+  outline:none; background:rgba(255,255,255,0.1); color:white;
+}
+.input-box .buttons button {
+  background:transparent; border:none; color:white;
+  font-size:1.5rem; margin-left:10px; cursor:pointer;
+}
+
+/* Settings */
+.settings { position:fixed; top:20px; right:20px; z-index:2; }
+.settings button { font-size:1.5rem; background:none; border:none; color:white; cursor:pointer; }
+.settings-menu { display:none; position:absolute; top:40px; right:0; background:rgba(0,0,0,0.7); border-radius:5px; }
+.settings-menu button { display:block; width:150px; padding:10px; border:none; background:none; color:white; text-align:left; cursor:pointer; }
+
+/* Media Queries for Mobile */
+@media (max-width: 768px) {
+  .left-panel { width: 100%; height: auto; position:relative; flex-direction:row; justify-content:space-around; padding:10px; }
+  .chat-section { margin-left:0; margin-top:10px; padding:10px; height: calc(100% - 150px); }
+  .input-box { left:0; right:0; padding:10px; }
+  .input-box input { padding:8px; font-size:0.9rem; }
+  .glass-title { font-size:8vw; top:10%; transform:translateX(-50%); }
+}
